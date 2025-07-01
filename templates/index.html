@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Сбор комментариев с видео YouTube</title>
+    <style>
+        #loading {
+            display: none;
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function showLoading() {
+            document.getElementById("loading").style.display = "inline";
+        }
+    </script>
 </head>
 <body>
     <h2>Сбор комментариев с видео YouTube</h2>
 
-    <form method="post">
+    <form method="post" onsubmit="showLoading()">
         <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required style="width: 400px;"><br><br>
         <select name="period">
             <option value="day">Последний день</option>
@@ -15,6 +28,7 @@
             <option value="month" selected>Последний месяц</option>
         </select><br><br>
         <button type="submit">Собрать комментарии</button>
+        <span id="loading">⏳ Загрузка...</span>
     </form>
 
     {% if error %}
