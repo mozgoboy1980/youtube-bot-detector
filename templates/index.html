@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Сбор комментариев с видео YouTube</title>
+    <title>Поиск ботов в YouTube-комментариях</title>
 </head>
 <body>
-    <h2>Сбор комментариев с видео YouTube</h2>
+    <h2>Вставьте ссылку на видео на YouTube</h2>
 
-    <form method="post">
+    <form method="post" onsubmit="showLoading()">
         <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required style="width: 400px;"><br><br>
         <select name="period">
             <option value="day">Последний день</option>
@@ -16,6 +16,8 @@
         </select><br><br>
         <button type="submit">Собрать комментарии</button>
     </form>
+
+    <p id="loading" style="color: blue;"></p>
 
     {% if error %}
         <p style="color: red;">Ошибка: {{ error }}</p>
@@ -30,29 +32,39 @@
         </ul>
 
         <button onclick="detectBots()">Detect</button>
+        <p id="detecting" style="color: blue;"></p>
+
         <h3>Подозрительные пользователи:</h3>
         <ul id="bot-comments"></ul>
 
         <script>
             function detectBots() {
-                const all = document.querySelectorAll("#all-comments li");
-                const bots = [];
+                document.getElementById("detecting").innerText = "Проверяем... ⏳";
+                setTimeout(() => {
+                    const all = document.querySelectorAll("#all-comments li");
+                    const bots = [];
 
-                all.forEach(el => {
-                    const text = el.textContent.trim();
-                    const match = text.match(/^@([^\s:]+)/);
-                    if (match) {
-                        const username = match[1];
-                        const isBot = username.startsWith("user") || /\d{3,}/.test(username);
-                        if (isBot) {
-                            bots.push(el.cloneNode(true));
+                    all.forEach(el => {
+                        const text = el.textContent.trim();
+                        const match = text.match(/^@([^\s:]+)/);
+                        if (match) {
+                            const username = match[1];
+                            const isBot = username.startsWith("user") || /\d{3,}/.test(username);
+                            if (isBot) {
+                                bots.push(el.cloneNode(true));
+                            }
                         }
-                    }
-                });
+                    });
 
-                const botList = document.getElementById("bot-comments");
-                botList.innerHTML = "";
-                bots.forEach(b => botList.appendChild(b));
+                    const botList = document.getElementById("bot-comments");
+                    botList.innerHTML = "";
+                    bots.forEach(b => botList.appendChild(b));
+                    document.getElementById("detecting").innerText = ""; // скрыть сообщение
+                }, 200); // небольшая пауза имитации
+            }
+
+            function showLoading() {
+                document.getElementById("loading").innerText = "Собираем комментарии... ⏳";
             }
         </script>
     {% endif %}
