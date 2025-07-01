@@ -42,24 +42,26 @@ def get_comments_from_video(video_id, published_after):
 @app.route("/", methods=["GET", "POST"])
 def index():
     comments = []
+    error = None
     if request.method == "POST":
-        link = request.form["link"]
+        link = request.form["video_url"]  # ✅ исправлено: 'video_url' вместо 'link'
         period = request.form["period"]
         if "v=" in link:
             video_id = link.split("v=")[-1].split("&")[0]
         elif "youtu.be/" in link:
             video_id = link.split("youtu.be/")[-1].split("?")[0]
         else:
-            return render_template("index.html", error="Неверная ссылка на видео")
+            error = "Неверная ссылка на видео"
+            return render_template("index.html", error=error)
 
         days_ago = {
-            "7days": 7,
-            "1month": 30,
-            "6months": 180
+            "day": 1,
+            "week": 7,
+            "month": 30
         }.get(period, 30)
         published_after = datetime.utcnow() - timedelta(days=days_ago)
         comments = get_comments_from_video(video_id, published_after)
-    return render_template("index.html", comments=comments)
+    return render_template("index.html", comments=comments, error=error)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
