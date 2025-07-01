@@ -7,27 +7,25 @@
 <body>
     <h2>Сбор комментариев с видео YouTube</h2>
 
-    <form method="POST">
-        <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." style="width: 400px;" required><br><br>
-
+    <form method="post">
+        <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required style="width: 400px;"><br><br>
         <select name="period">
-            <option value="7">Последняя неделя</option>
-            <option value="30" selected>Последний месяц</option>
-            <option value="180">Последние полгода</option>
+            <option value="day">Последний день</option>
+            <option value="week">Последняя неделя</option>
+            <option value="month" selected>Последний месяц</option>
         </select><br><br>
-
         <button type="submit">Собрать комментарии</button>
     </form>
 
     {% if error %}
-        <p style="color:red;">{{ error }}</p>
+        <p style="color: red;">Ошибка: {{ error }}</p>
     {% endif %}
 
     {% if comments %}
-        <h3>Результаты ({{ comments|length }} комментариев):</h3>
+        <h3>Результаты ({{ comments|length }}):</h3>
         <ul>
         {% for c in comments %}
-            <li><strong>{{ c.author }}</strong>: {{ c.text }} ({{ c.date }})</li>
+            <li><strong>{{ c.author }}</strong>: {{ c.text }} <em>({{ c.date }})</em></li>
         {% endfor %}
         </ul>
     {% endif %}
