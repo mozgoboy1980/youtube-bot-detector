@@ -1,54 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Сбор комментариев</title>
+    <title>Bot Detector</title>
 </head>
 <body>
-    <h1>Сбор комментариев с видео YouTube</h1>
-    <form method="POST">
-        <label>Ссылка на видео:</label><br>
-        <input name="video_url" style="width: 400px;" required><br><br>
-        <label>Период:</label><br>
+    <h2>Сбор комментариев с видео YouTube</h2>
+    <form method="post">
+        <input name="link" placeholder="https://www.youtube.com/watch?v=..." required style="width:400px"><br><br>
         <select name="period">
-            <option value="week">Последняя неделя</option>
-            <option value="month">Последний месяц</option>
-            <option value="halfyear">Последние полгода</option>
+            <option value="7days">Последняя неделя</option>
+            <option value="1month" selected>Последний месяц</option>
+            <option value="6months">Последние 6 месяцев</option>
         </select><br><br>
         <button type="submit">Собрать комментарии</button>
     </form>
-
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
     {% if comments %}
-    <h2>Результаты ({{ comments|length }} комментариев):</h2>
-    <button onclick="downloadCSV()">Скачать CSV</button>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr><th>Автор</th><th>Комментарий</th><th>Дата</th><th>Видео</th></tr>
-        {% for c in comments %}
-        <tr>
-            <td>{{ c.author }}</td>
-            <td>{{ c.text }}</td>
-            <td>{{ c.date }}</td>
-            <td>{{ c.videoId }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <script>
-        function downloadCSV() {
-            fetch("/export", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ comments: {{ comments|tojson }} })
-            })
-            .then(res => res.blob())
-            .then(blob => {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "comments.csv";
-                link.click();
-            });
-        }
-    </script>
+        <h3>Результаты ({{ comments|length }} комментариев):</h3>
+        <ul>
+            {% for c in comments %}
+                <li><b>{{ c.author }}</b>: {{ c.text }} <i>({{ c.date }})</i></li>
+            {% endfor %}
+        </ul>
     {% endif %}
 </body>
 </html>
