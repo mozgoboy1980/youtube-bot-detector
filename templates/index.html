@@ -1,35 +1,60 @@
-{% if comments %}
-    <h3>Результаты ({{ comments|length }}):</h3>
-    <ul id="all-comments">
-    {% for c in comments %}
-        <li><strong>{{ c.author }}</strong>: {{ c.text }} <em>({{ c.date }})</em></li>
-    {% endfor %}
-    </ul>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сбор комментариев с видео YouTube</title>
+</head>
+<body>
+    <h2>Сбор комментариев с видео YouTube</h2>
 
-    <button onclick="detectBots()">Detect</button>
-    <h3>Подозрительные пользователи:</h3>
-    <ul id="bot-comments"></ul>
+    <form method="post">
+        <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required style="width: 400px;"><br><br>
+        <select name="period">
+            <option value="day">Последний день</option>
+            <option value="week">Последняя неделя</option>
+            <option value="month" selected>Последний месяц</option>
+        </select><br><br>
+        <button type="submit">Собрать комментарии</button>
+    </form>
 
-    <script>
-        function detectBots() {
-            const all = document.querySelectorAll("#all-comments li");
-            const bots = [];
+    {% if error %}
+        <p style="color: red;">Ошибка: {{ error }}</p>
+    {% endif %}
 
-            all.forEach(el => {
-                const text = el.textContent.trim();
-                const match = text.match(/^@([^\s:]+)/);
-                if (match) {
-                    const username = match[1];
-                    const isBot = username.startsWith("user") || /\d{3,}/.test(username);
-                    if (isBot) {
-                        bots.push(el.cloneNode(true));
+    {% if comments %}
+        <h3>Результаты ({{ comments|length }}):</h3>
+        <ul id="all-comments">
+        {% for c in comments %}
+            <li><strong>@{{ c.author }}</strong>: {{ c.text }} <em>({{ c.date }})</em></li>
+        {% endfor %}
+        </ul>
+
+        <button onclick="detectBots()">Detect</button>
+        <h3>Подозрительные пользователи:</h3>
+        <ul id="bot-comments"></ul>
+
+        <script>
+            function detectBots() {
+                const all = document.querySelectorAll("#all-comments li");
+                const bots = [];
+
+                all.forEach(el => {
+                    const text = el.textContent.trim();
+                    const match = text.match(/^@([^\s:]+)/);
+                    if (match) {
+                        const username = match[1];
+                        const isBot = username.startsWith("user") || /\d{3,}/.test(username);
+                        if (isBot) {
+                            bots.push(el.cloneNode(true));
+                        }
                     }
-                }
-            });
+                });
 
-            const botList = document.getElementById("bot-comments");
-            botList.innerHTML = "";
-            bots.forEach(b => botList.appendChild(b));
-        }
-    </script>
-{% endif %}
+                const botList = document.getElementById("bot-comments");
+                botList.innerHTML = "";
+                bots.forEach(b => botList.appendChild(b));
+            }
+        </script>
+    {% endif %}
+</body>
+</html>
