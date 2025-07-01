@@ -26,30 +26,27 @@ def get_comments(video_id, published_after):
         "textFormat": "plainText"
     }
 
-        total = 0
-    while True:
-        response = requests.get(url, params=params)
-        data = response.json()
+     total = 0
+while True:
+    response = requests.get(url, params=params)
+    data = response.json()
 
-        for item in data.get("items", []):
-            comment = item["snippet"]["topLevelComment"]["snippet"]
-            comment_time = comment["publishedAt"]
-            comment_datetime = datetime.strptime(comment_time, "%Y-%m-%dT%H:%M:%SZ")
-            if comment_datetime >= published_after:
-                comments.append({
-                    "author": comment["authorDisplayName"],
-                    "text": comment["textDisplay"],
-                    "date": comment_datetime.strftime("%Y-%m-%d %H:%M"),
-                    "videoId": video_id
-                })
+    for item in data.get("items", []):
+        comment = item["snippet"]["topLevelComment"]["snippet"]
+        comment_time = comment["publishedAt"]
+        comment_datetime = datetime.strptime(comment_time, "%Y-%m-%dT%H:%M:%SZ")
+        if comment_datetime >= published_after:
+            comments.append({
+                "author": comment["authorDisplayName"],
+                "text": comment["textDisplay"],
+                "date": comment_datetime.strftime("%Y-%m-%d %H:%M"),
+                "videoId": video_id
+            })
 
-                if "nextPageToken" in data:
-            params["pageToken"] = data["nextPageToken"]
-        else:
-            break
-            params["pageToken"] = data["nextPageToken"]
-        else:
-            break
+    if "nextPageToken" in data:
+        params["pageToken"] = data["nextPageToken"]
+    else:
+        break
 
     return comments
 
