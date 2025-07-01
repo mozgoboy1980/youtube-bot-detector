@@ -1,0 +1,4 @@
+flask
+pandas
+yt-dlp
+youtube-comment-downloader

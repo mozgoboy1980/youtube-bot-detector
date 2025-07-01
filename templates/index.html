@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сбор комментариев с YouTube</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+        <h2 class="mb-4">Сбор комментариев с канала YouTube</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label for="channel_url" class="form-label">Ссылка на канал:</label>
+                <input type="text" name="channel_url" id="channel_url" class="form-control" placeholder="https://www.youtube.com/@ZERKALOIO" required>
+            </div>
+            <div class="mb-3">
+                <label for="period" class="form-label">Период:</label>
+                <select name="period" id="period" class="form-select">
+                    <option value="week">Последняя неделя</option>
+                    <option value="month" selected>Последний месяц</option>
+                    <option value="halfyear">Последние 6 месяцев</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Собрать комментарии</button>
+        </form>
+
+        {% if table %}
+            <hr>
+            <h4 class="mt-4">Результаты (первые 100 комментариев):</h4>
+            <div class="table-responsive mt-3">
+                {{ table | safe }}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
